@@ -37,7 +37,7 @@ This is (for now) an experimental plugin. Please report issues if and when you f
 |baseUrl|URL|true|Location where Fxlauncher will go to download the files from|
 |mainclass|String|true|Main entry point into the application|
 |whatsNew|String|false|If set fxlauncher will show a webview with the contents of the whatsNew variable in it|
-|privateKeyFile|String|true|Location of the ssh private key file that will be used to upload the files|
+|identityKeyFile|String|true|Location of the ssh private key file that will be used to upload the files|
 |deployTarget|String|true|Location where the files will be uploaded to|
 |cacheDir|String|false|Location where fxlauncher will store the files. Default is `USERLIB/${appName}/cache`|
 |parameters|String|false|parameters that need to be passed to the application when Fxlauncher starts it up|

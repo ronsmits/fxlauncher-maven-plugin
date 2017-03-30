@@ -21,7 +21,6 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import sun.misc.Unsafe;
 
-import javax.swing.text.html.Option;
 import java.io.Console;
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -34,11 +33,11 @@ import java.util.concurrent.CountDownLatch;
 @Mojo(name = "install", requiresDependencyResolution = ResolutionScope.RUNTIME, defaultPhase = LifecyclePhase.INSTALL)
 public class InstallMojo extends AbstractFxLauncherMojo {
 
-    @Parameter(required = true) private String identityFile;
+    @Parameter(required = true) private String identityKeyFile;
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
         tryAvoidJCE();
-        System.out.println(identityFile);
+        System.out.println(identityKeyFile);
         int atIndex = deployTarget.indexOf("@");
         String username = deployTarget.substring(0, atIndex);
         int colonIndex = deployTarget.indexOf(":");
@@ -50,9 +49,9 @@ public class InstallMojo extends AbstractFxLauncherMojo {
             sshClient.loadKnownHosts();
             sshClient.connect(host);
 
-            KeyProvider noPassphrase = sshClient.loadKeys(identityFile);
-            KeyProvider consoleProvider = sshClient.loadKeys(identityFile, consolePasswordFinder());
-            KeyProvider javaFxProvider = sshClient.loadKeys(identityFile, javafxPasswordFinder());
+            KeyProvider noPassphrase = sshClient.loadKeys(identityKeyFile);
+            KeyProvider consoleProvider = sshClient.loadKeys(identityKeyFile, consolePasswordFinder());
+            KeyProvider javaFxProvider = sshClient.loadKeys(identityKeyFile, javafxPasswordFinder());
             sshClient.authPublickey(username, noPassphrase, javaFxProvider, consoleProvider);
             sshClient.newSCPFileTransfer().upload(new FileSystemFile(buildDir), path);
 

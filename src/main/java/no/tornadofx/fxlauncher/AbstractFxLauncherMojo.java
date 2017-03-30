@@ -37,7 +37,7 @@ abstract class AbstractFxLauncherMojo extends AbstractMojo {
     @Parameter(required = true)
     private String mainClass;
 
-    @Parameter
+    @Parameter(defaultValue = "USERLIB/${appName}/cache")
     private String cacheDir;
 
     @Parameter
