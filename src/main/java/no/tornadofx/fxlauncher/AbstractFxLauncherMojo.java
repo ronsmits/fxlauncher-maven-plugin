@@ -18,6 +18,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.*;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,6 +40,9 @@ abstract class AbstractFxLauncherMojo extends AbstractMojo {
 
     @Parameter(defaultValue = "USERLIB/${appName}/cache")
     private String cacheDir;
+
+    @Parameter
+    protected UIProviderConfig uiProviderConfig;
 
     @Parameter
     private String parameters;
@@ -87,7 +91,7 @@ abstract class AbstractFxLauncherMojo extends AbstractMojo {
     FXManifest createManifest() throws MojoExecutionException {
         getLog().info("Creating the manifest");
         if (includeExtensions != null) CreateManifest.setIncludeExtensions(includeExtensions);
-        FXManifest manifest=null;
+        FXManifest manifest = null;
         try {
             manifest = CreateManifest.create(baseUrl.toURI(), mainClass, get(buildDir));
         } catch (IOException | URISyntaxException e) {
@@ -110,20 +114,70 @@ abstract class AbstractFxLauncherMojo extends AbstractMojo {
      *
      * @param fileToAdd absolute path to the file that needs to be added.
      * @throws MojoExecutionException only when something goes wrong with the adding to the zipfile.
-     * TODO: need to make it possible to maintain a relative path in it. Maybe strip the <code>projectBuildDirectory</code> of it?
+     *                                TODO: need to make it possible to maintain a relative path in it. Maybe strip the <code>projectBuildDirectory</code> of it?
      */
     void addtoLauncher(String fileToAdd) throws MojoExecutionException {
         getLog().info(String.format("placing %s in fxlauncher", fileToAdd));
-        Path path = Paths.get(String.format("%s/fxlauncher.jar", buildDir));
-        Map<String, String> props = new HashMap<>();
-        props.put("create", "false");
-        URI uri = URI.create("jar:" + path.toUri().toASCIIString());
+        Map<String, String> props = getPropsForFileSystem();
+        URI uri = getUri();
         try (FileSystem jarFile = FileSystems.newFileSystem(uri, props)) {
             Path source = Paths.get(fileToAdd);
             Path target = jarFile.getPath(String.valueOf(source.getFileName()));
             Files.copy(source, target, StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException e) {
             throw new MojoExecutionException("error in adding file to jar", e);
+        }
+    }
+
+    private Map<String, String> getPropsForFileSystem() {
+        Map<String, String> props = new HashMap<>();
+        props.put("create", "false");
+        return props;
+    }
+
+    private URI getUri() {
+        Path path = Paths.get(String.format("%s/fxlauncher.jar", buildDir));
+        return URI.create("jar:" + path.toUri().toASCIIString());
+    }
+
+    void addDirtoLauncher(Path source, String targetPath) {
+        getLog().info(source.toString()+" "+ targetPath);
+        int stripLength = source.toString().length();
+        URI uri = getUri();
+        Map<String, String> props = getPropsForFileSystem();
+        try (FileSystem jarFile = FileSystems.newFileSystem(uri, props)) {
+            targetPath = targetPath.replace(".", "/");
+            Path target = jarFile.getPath(targetPath + "/");
+            Files.createDirectories(target);
+            System.out.println(target);
+            Files.walkFileTree(source, new SimpleFileVisitor<Path>(){
+                @Override
+                public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
+                    System.out.println("found " +dir);
+                    String t = dir.toString().substring(stripLength˚);
+                    System.out.println("t is now " + t);
+                    return FileVisitResult.CONTINUE;
+                }
+            });
+//            Files.walkFileTree(source, new SimpleFileVisitor<Path>() {
+//                @Override
+//                public FileVisitResult preVisitDirectory(final Path dir,
+//                                                         final BasicFileAttributes attrs) throws IOException {
+//                    System.out.println("dir is " + dir);
+//                    Files.createDirectories(target.resolve(source.relativize(dir)));
+//                    return FileVisitResult.CONTINUE;
+//                }
+//
+//                @Override
+//                public FileVisitResult visitFile(final Path file,
+//                                                 final BasicFileAttributes attrs) throws IOException {
+//                    Files.copy(file,
+//                            target.resolve(source.relativize(file)));
+//                    return FileVisitResult.CONTINUE;
+//                }
+//            });
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 

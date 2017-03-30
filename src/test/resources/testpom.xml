@@ -30,9 +30,14 @@
                     <appName>name</appName>
                     <baseUrl>http://localhost</baseUrl>
                     <mainClass>main</mainClass>
-                    <whatsNew>readme.txt</whatsNew>
+                    <!--<whatsNew>readme.txt</whatsNew>-->
                     <identityFile>${user.home}/.ssh/id_rsa</identityFile>
                     <deployTarget>ron@ronsmits.org:www/demo/</deployTarget>
+                    <uiProviderConfig>
+                        <uiProviderClass>uiclass</uiProviderClass>
+                        <uiProviderPackage>uitest.test.eindelijk</uiProviderPackage>
+                        <uiProviderLocation>${user.home}/src/fxlauncher-maven-plugin/target/test-classes/uitest</uiProviderLocation>
+                    </uiProviderConfig>
                 </configuration>
                 <executions>
                     <execution>
