@@ -1,6 +1,5 @@
 package no.tornadofx.fxlauncher;
 
-import com.sun.jndi.toolkit.url.Uri;
 import fxlauncher.FXManifest;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -13,7 +12,6 @@ import javax.xml.bind.JAXB;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.nio.file.*;
 import java.util.Map;
 
@@ -28,11 +26,11 @@ public class PackageMojo extends AbstractFxLauncherMojo {
 
     public void execute() throws MojoExecutionException, MojoFailureException {
         try {
-            System.out.println(uiProviderConfig);
+            System.out.println(uiProvider);
             copyDependencies();
             renameFxLauncherJar();
             copyArtifactIntoBuildDir();
-            if(uiProviderConfig!=null){
+            if(uiProvider !=null){
                 installUiProvider();
             }
             FXManifest manifest = createManifest();
@@ -46,11 +44,11 @@ public class PackageMojo extends AbstractFxLauncherMojo {
     }
 
     private void installUiProvider() throws MojoExecutionException {
-        addDirtoLauncher(Paths.get(uiProviderConfig.getUiProviderLocation()), uiProviderConfig.getUiProviderPackage());
-        addServices(uiProviderConfig);
+        addDirtoLauncher(Paths.get(uiProvider.getUiProviderLocation()), uiProvider.getUiProviderPackage());
+        addServices(uiProvider);
     }
 
-    private void addServices(UIProviderConfig uiProviderConfig) {
+    private void addServices(UIProvider uiProvider) {
         URI uri = getUri();
         Map<String, String> props = getPropsForFileSystem();
         try (FileSystem jarFile = FileSystems.newFileSystem(uri, props)) {
@@ -60,7 +58,7 @@ public class PackageMojo extends AbstractFxLauncherMojo {
 //                Files.createDirectories(path);
             System.out.println("will write to " +path.resolve("fxlauncher.UIProvider"));
             BufferedWriter bufferedWriter = Files.newBufferedWriter(path.resolve("fxlauncher.UIProvider"), StandardOpenOption.CREATE, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING);
-            bufferedWriter.write(String.format("%s.%s\n", uiProviderConfig.getUiProviderPackage(), uiProviderConfig.getUiProviderClass()));
+            bufferedWriter.write(String.format("%s.%s\n", uiProvider.getUiProviderPackage(), uiProvider.getUiProviderClass()));
             bufferedWriter.flush();
             bufferedWriter.close();
         } catch (IOException e) {

@@ -33,11 +33,11 @@
                     <!--<whatsNew>readme.txt</whatsNew>-->
                     <identityFile>${user.home}/.ssh/id_rsa</identityFile>
                     <deployTarget>ron@ronsmits.org:www/demo/</deployTarget>
-                    <uiProviderConfig>
+                    <uiProvider>
                         <uiProviderClass>uiclass</uiProviderClass>
                         <uiProviderPackage>uitest.test.eindelijk</uiProviderPackage>
                         <uiProviderLocation>${user.home}/src/fxlauncher-maven-plugin/target/test-classes</uiProviderLocation>
-                    </uiProviderConfig>
+                    </uiProvider>
                 </configuration>
                 <executions>
                     <execution>

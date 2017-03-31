@@ -42,7 +42,7 @@ abstract class AbstractFxLauncherMojo extends AbstractMojo {
     private String cacheDir;
 
     @Parameter
-    protected UIProviderConfig uiProviderConfig;
+    protected UIProvider uiProvider;
 
     @Parameter
     private String parameters;

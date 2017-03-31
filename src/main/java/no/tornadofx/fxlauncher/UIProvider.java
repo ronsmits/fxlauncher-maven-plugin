@@ -4,17 +4,17 @@ package no.tornadofx.fxlauncher;
  * Object to contain the settings needed for the uiProverClass.
  *
  */
-public class UIProviderConfig {
+public class UIProvider {
     private String uiProviderClass;
     private String uiProviderPackage;
     private String uiProviderLocation;
     /**
      * Empty constructor dont know if it is needed.
      */
-    public UIProviderConfig() {
+    public UIProvider() {
     }
 
-    public UIProviderConfig(String uiProviderClass, String UIProviderPackage) {
+    public UIProvider(String uiProviderClass, String UIProviderPackage) {
         this.uiProviderClass = uiProviderClass;
         this.uiProviderPackage = UIProviderPackage;
     }
@@ -37,7 +37,7 @@ public class UIProviderConfig {
 
     @Override
     public String toString() {
-        return "UIProviderConfig{" +
+        return "UIProvider{" +
                 "uiProviderClass='" + uiProviderClass + '\'' +
                 ", uiProviderPackage='" + uiProviderPackage + '\'' +
                 '}';
