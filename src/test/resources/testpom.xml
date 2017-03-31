@@ -36,7 +36,7 @@
                     <uiProviderConfig>
                         <uiProviderClass>uiclass</uiProviderClass>
                         <uiProviderPackage>uitest.test.eindelijk</uiProviderPackage>
-                        <uiProviderLocation>${user.home}/src/fxlauncher-maven-plugin/target/test-classes/uitest</uiProviderLocation>
+                        <uiProviderLocation>${user.home}/src/fxlauncher-maven-plugin/target/test-classes</uiProviderLocation>
                     </uiProviderConfig>
                 </configuration>
                 <executions>

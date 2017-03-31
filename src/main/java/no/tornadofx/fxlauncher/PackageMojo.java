@@ -1,5 +1,6 @@
 package no.tornadofx.fxlauncher;
 
+import com.sun.jndi.toolkit.url.Uri;
 import fxlauncher.FXManifest;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -9,10 +10,12 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 
 import javax.xml.bind.JAXB;
+import java.io.BufferedWriter;
 import java.io.IOException;
+import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.nio.file.*;
+import java.util.Map;
 
 /**
  * Created by ronsmits on 24/03/2017.
@@ -42,8 +45,27 @@ public class PackageMojo extends AbstractFxLauncherMojo {
         }
     }
 
-    private void installUiProvider() {
+    private void installUiProvider() throws MojoExecutionException {
         addDirtoLauncher(Paths.get(uiProviderConfig.getUiProviderLocation()), uiProviderConfig.getUiProviderPackage());
+        addServices(uiProviderConfig);
+    }
+
+    private void addServices(UIProviderConfig uiProviderConfig) {
+        URI uri = getUri();
+        Map<String, String> props = getPropsForFileSystem();
+        try (FileSystem jarFile = FileSystems.newFileSystem(uri, props)) {
+            Path path = jarFile.getPath("/META-INF/services");
+            Files.createDirectories(path);
+//            if(Files.notExists(path))
+//                Files.createDirectories(path);
+            System.out.println("will write to " +path.resolve("fxlauncher.UIProvider"));
+            BufferedWriter bufferedWriter = Files.newBufferedWriter(path.resolve("fxlauncher.UIProvider"), StandardOpenOption.CREATE, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING);
+            bufferedWriter.write(String.format("%s.%s\n", uiProviderConfig.getUiProviderPackage(), uiProviderConfig.getUiProviderClass()));
+            bufferedWriter.flush();
+            bufferedWriter.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 

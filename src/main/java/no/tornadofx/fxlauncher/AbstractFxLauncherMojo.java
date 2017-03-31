@@ -129,55 +129,49 @@ abstract class AbstractFxLauncherMojo extends AbstractMojo {
         }
     }
 
-    private Map<String, String> getPropsForFileSystem() {
+    Map<String, String> getPropsForFileSystem() {
         Map<String, String> props = new HashMap<>();
         props.put("create", "false");
         return props;
     }
 
-    private URI getUri() {
+    URI getUri() {
         Path path = Paths.get(String.format("%s/fxlauncher.jar", buildDir));
         return URI.create("jar:" + path.toUri().toASCIIString());
     }
 
-    void addDirtoLauncher(Path source, String targetPath) {
-        getLog().info(source.toString()+" "+ targetPath);
-        int stripLength = source.toString().length();
+    void addDirtoLauncher(Path sourcePath, String targetPath) throws MojoExecutionException {
+        getLog().info("Copying UIProvider files to launcher");
+        int stripLength = sourcePath.toString().length();
+
         URI uri = getUri();
         Map<String, String> props = getPropsForFileSystem();
         try (FileSystem jarFile = FileSystems.newFileSystem(uri, props)) {
             targetPath = targetPath.replace(".", "/");
+            Path source = sourcePath.resolve(targetPath);
             Path target = jarFile.getPath(targetPath + "/");
             Files.createDirectories(target);
-            System.out.println(target);
-            Files.walkFileTree(source, new SimpleFileVisitor<Path>(){
+            Files.walkFileTree(source, new SimpleFileVisitor<Path>() {
                 @Override
                 public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
-                    System.out.println("found " +dir);
-                    String t = dir.toString().substring(stripLength˚);
-                    System.out.println("t is now " + t);
+                    String t = dir.toString().substring(stripLength);
+                    if (!t.isEmpty()) {
+                        Path path = target.resolve(t);
+                        Files.createDirectories(path);
+                    }
+                    return FileVisitResult.CONTINUE;
+                }
+
+                @Override
+                public FileVisitResult visitFile(Path visitingFile, BasicFileAttributes attrs) throws IOException {
+                    String fileAsString = visitingFile.toString().substring(sourcePath.toString().length());
+                    Path filetarget = jarFile.getPath(fileAsString);
+                    Files.copy(visitingFile, filetarget);
                     return FileVisitResult.CONTINUE;
                 }
             });
-//            Files.walkFileTree(source, new SimpleFileVisitor<Path>() {
-//                @Override
-//                public FileVisitResult preVisitDirectory(final Path dir,
-//                                                         final BasicFileAttributes attrs) throws IOException {
-//                    System.out.println("dir is " + dir);
-//                    Files.createDirectories(target.resolve(source.relativize(dir)));
-//                    return FileVisitResult.CONTINUE;
-//                }
-//
-//                @Override
-//                public FileVisitResult visitFile(final Path file,
-//                                                 final BasicFileAttributes attrs) throws IOException {
-//                    Files.copy(file,
-//                            target.resolve(source.relativize(file)));
-//                    return FileVisitResult.CONTINUE;
-//                }
-//            });
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new MojoExecutionException("Error in copying files", e);
         }
     }
 

@@ -5,9 +5,9 @@ package no.tornadofx.fxlauncher;
  *
  */
 public class UIProviderConfig {
-    private String UiProviderClass;
-    private String UiProviderPackage;
-    private String UiProviderLocation;
+    private String uiProviderClass;
+    private String uiProviderPackage;
+    private String uiProviderLocation;
     /**
      * Empty constructor dont know if it is needed.
      */
@@ -15,39 +15,39 @@ public class UIProviderConfig {
     }
 
     public UIProviderConfig(String uiProviderClass, String UIProviderPackage) {
-        UiProviderClass = uiProviderClass;
-        this.UiProviderPackage = UIProviderPackage;
+        this.uiProviderClass = uiProviderClass;
+        this.uiProviderPackage = UIProviderPackage;
     }
 
     public String getUiProviderClass() {
-        return UiProviderClass;
+        return uiProviderClass;
     }
 
     public void setUiProviderClass(String uiProviderClass) {
-        UiProviderClass = uiProviderClass;
+        this.uiProviderClass = uiProviderClass;
     }
 
     public String getUiProviderPackage() {
-        return UiProviderPackage;
+        return uiProviderPackage;
     }
 
     public void setUiProviderPackage(String uiProviderPackage) {
-        this.UiProviderPackage = uiProviderPackage;
+        this.uiProviderPackage = uiProviderPackage;
     }
 
     @Override
     public String toString() {
         return "UIProviderConfig{" +
-                "UiProviderClass='" + UiProviderClass + '\'' +
-                ", UiProviderPackage='" + UiProviderPackage + '\'' +
+                "uiProviderClass='" + uiProviderClass + '\'' +
+                ", uiProviderPackage='" + uiProviderPackage + '\'' +
                 '}';
     }
 
     public String getUiProviderLocation() {
-        return UiProviderLocation;
+        return uiProviderLocation;
     }
 
     public void setUiProviderLocation(String uiProviderLocation) {
-        UiProviderLocation = uiProviderLocation;
+        this.uiProviderLocation = uiProviderLocation;
     }
 }
